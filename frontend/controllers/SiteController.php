@@ -11,6 +11,8 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use common\models\UserAddress;
+use common\models\User;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
@@ -111,39 +113,6 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return mixed
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
-            }
-
-            return $this->refresh();
-        }
-
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return mixed
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 
     /**
@@ -254,6 +223,47 @@ class SiteController extends Controller
 
         return $this->render('resendVerificationEmail', [
             'model' => $model
+        ]);
+    }
+
+    public function actionProfile()
+    {
+        /** @var \common\models\User  $user */
+        $user = Yii::$app->user->identity;
+        $userAddresses = $user->addresses;
+        $userAddress = $user->getAddress();
+        return $this->render('profile', [
+            'user' => $user,
+            'userAddress' => $userAddress
+        ]);
+    }
+
+    public function actionUpdateAddress()
+    {
+         /** @var \common\models\User  $user */
+        $user = Yii::$app->user->identity;
+        $userAddress = $user->getAddress();
+        $success = false;
+        if ($userAddress->load(Yii::$app->request->post()) && $userAddress->save()) {
+            $success = true;
+        }
+        return $this->renderAjax('user_address', [
+            'userAddress' => $userAddress,
+            'success' => $success,
+        ]);
+    }
+
+    public function actionUpdateAccount()
+    {
+         /** @var \common\models\User  $user */
+        $user = Yii::$app->user->identity;
+        $success = false;
+        if ($user->load(Yii::$app->request->post()) && $user->save()) {
+            $success = true;
+        }
+        return $this->renderAjax('user_account', [
+            'user' => $user,
+            'success' => $success,
         ]);
     }
 }
