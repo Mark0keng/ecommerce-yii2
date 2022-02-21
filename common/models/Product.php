@@ -3,6 +3,9 @@
 namespace common\models;
 
 use Yii;
+use yii\helpers\FileHelper;
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
 
 /**
  * This is the model class for table "products".
@@ -26,11 +29,22 @@ use Yii;
 class Product extends \yii\db\ActiveRecord
 {
     /**
+     * @var \yii\web\UploadedFile
+     */
+    public $imageFile;
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
         return 'products';
+    }
+
+    public function behaviors(){
+        return[
+            TimestampBehavior::class,
+            BlameableBehavior::class,
+        ];
     }
 
     /**
@@ -44,7 +58,8 @@ class Product extends \yii\db\ActiveRecord
             [['price'], 'number'],
             [['status', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
             [['name'], 'string', 'max' => 255],
-            [['image'], 'string', 'max' => 2000],
+            [['imageFile'], 'file', 'extensions' => ['png', 'jpg', 'jpeg']],
+            [['image'], 'string', 'max' => 255],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
         ];
@@ -60,8 +75,9 @@ class Product extends \yii\db\ActiveRecord
             'name' => 'Name',
             'description' => 'Description',
             'image' => 'Image',
+            'imageFile' => 'Image',
             'price' => 'Price',
-            'status' => 'Status',
+            'status' => 'Published',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'created_by' => 'Created By',
@@ -117,4 +133,32 @@ class Product extends \yii\db\ActiveRecord
     {
         return new \common\models\query\ProductQuery(get_called_class());
     }
+
+    public function getImageUrl()
+    {
+        if ($this->image){
+            return Yii::$app->params['frontendUrl'] . 'storage/products/' . $this->image;
+        }
+        return Yii::$app->params['frontendUrl'] . 'img/noimage.svg';
+    }
+
+    public function urlGenerate(){
+        if(isset($this->imageFile)){
+            $rand = Yii::$app->security->generateRandomString();
+            $imgUrl = $this->image = "{$rand}/{$this->imageFile->name}";
+            return $imgUrl;
+        } else{
+            return $imgUrl = null;
+        }
+    }
+
+    public function isImage($url)
+    {
+        if (!is_null($url)){
+            return $url;
+        } else{
+            return null;
+        }
+    }
+
 }
