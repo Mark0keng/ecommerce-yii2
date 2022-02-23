@@ -15,7 +15,7 @@ use yii\widgets\Pjax;
 <?php endif ?>
 
 <?php $form = ActiveForm::begin([
-    'action' => ['/site/update-account'],
+    'action' => ['/profile/update-account'],
     'options' => [
         'data-pjax' => 1,
     ]

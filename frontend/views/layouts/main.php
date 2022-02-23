@@ -51,7 +51,7 @@ AppAsset::register($this);
                 'items' => [
                     [
                         'label' => 'Profile',
-                        'url' => ['/site/profile'],
+                        'url' => ['/profile/index'],
                         
                     ],
                     [
