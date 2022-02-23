@@ -225,45 +225,4 @@ class SiteController extends Controller
             'model' => $model
         ]);
     }
-
-    public function actionProfile()
-    {
-        /** @var \common\models\User  $user */
-        $user = Yii::$app->user->identity;
-        $userAddresses = $user->addresses;
-        $userAddress = $user->getAddress();
-        return $this->render('profile', [
-            'user' => $user,
-            'userAddress' => $userAddress
-        ]);
-    }
-
-    public function actionUpdateAddress()
-    {
-         /** @var \common\models\User  $user */
-        $user = Yii::$app->user->identity;
-        $userAddress = $user->getAddress();
-        $success = false;
-        if ($userAddress->load(Yii::$app->request->post()) && $userAddress->save()) {
-            $success = true;
-        }
-        return $this->renderAjax('user_address', [
-            'userAddress' => $userAddress,
-            'success' => $success,
-        ]);
-    }
-
-    public function actionUpdateAccount()
-    {
-         /** @var \common\models\User  $user */
-        $user = Yii::$app->user->identity;
-        $success = false;
-        if ($user->load(Yii::$app->request->post()) && $user->save()) {
-            $success = true;
-        }
-        return $this->renderAjax('user_account', [
-            'user' => $user,
-            'success' => $success,
-        ]);
-    }
 }
