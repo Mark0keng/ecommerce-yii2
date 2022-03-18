@@ -1,8 +1,13 @@
+<?php 
+    use yii\helpers\Html;
+    use yii\helpers\Url;
+?>
+
 <div class="col mb-5">
     <div class="card h-100">
         <!-- Product image-->
         <a href="">
-            <img class="card-img-top" style="width = 600px;" src="<?= $model->getImageUrl() ?>" alt="..." />
+            <img class="card-img-top" src="<?= $model->getImageUrl() ?>" alt="..." />
         </a>
 
         <!-- Product details-->
@@ -22,7 +27,13 @@
         </div>
 
         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Check More</a></div>
+            <div class="text-center">
+                <a class="btn btn-outline-dark btn-sm mt-auto m-2" href="#">Check More</a>
+                <a href="<?php echo \yii\helpers\Url::to(['/cart/add']) ?>" class="btn btn-primary btn-add-to-cart">
+                    Add to Cart
+                </a>
+            </div>
+
         </div>
     </div>
 </div>
